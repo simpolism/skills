@@ -42,11 +42,26 @@ python scripts/chart.py --type synastry \
 
 ### Transit (natal chart + current sky)
 
+For transits **right now**, just omit the transit flags — the script defaults the
+transit moment to the current UTC date/time (and prints a note saying so):
+
+```bash
+python scripts/chart.py --type transit \
+  --name "Jake" --date 1990-05-15 --time 14:30 --place "Brooklyn, New York"
+```
+
+For a **specific** date (a past or future transit), pass `--transit-date` (and
+optionally `--transit-time` / `--transit-place`):
+
 ```bash
 python scripts/chart.py --type transit \
   --name "Jake" --date 1990-05-15 --time 14:30 --place "Brooklyn, New York" \
-  --transit-date 2026-06-15 --transit-time 12:00
+  --transit-date 2027-01-01 --transit-time 12:00
 ```
+
+(The default is UTC-now; the Moon moves ~0.5°/hour, so for a Moon-sensitive
+reading pass an explicit `--transit-time` in the user's local zone if precision
+matters. Slower planets are unaffected by the hour.)
 
 ## Flags
 
@@ -58,7 +73,7 @@ python scripts/chart.py --type transit \
 | `--place` | `"City, State"` (US) or `"City, Country"`. See gotchas. |
 | `--type` | `natal` (default), `synastry`, or `transit`. |
 | `--house-system` | `P` Placidus, `W` Whole Sign (default), `E` Equal, `O` Porphyry. |
-| `--transit-date` / `--transit-time` / `--transit-place` | The "current sky" moment for `--type transit`. Place defaults to person 1's. |
+| `--transit-date` / `--transit-time` / `--transit-place` | The "current sky" moment for `--type transit`. **Omit for transits right now** (defaults to UTC-now). Place defaults to person 1's. |
 | `--unknown-time` | Birth time unknown: planets only, no Ascendant/houses/angles. |
 | `--json` | Print the raw chart object instead of the text report. |
 

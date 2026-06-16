@@ -63,6 +63,19 @@ def main() -> int:
     if not args.date or not args.place:
         p.error("--date and --place are required (and usually --time)")
 
+    # For transits with no explicit transit moment, default to "now" (UTC) so
+    # "what are my transits right now" works without the caller computing the
+    # date. Transit place defaults to person 1's place (handled server-side).
+    if args.type == "transit" and not args.transit_date:
+        import datetime
+        now = datetime.datetime.now(datetime.timezone.utc)
+        args.transit_date = now.strftime("%Y-%m-%d")
+        if not args.transit_time:
+            args.transit_time = now.strftime("%H:%M:%S")
+        sys.stderr.write(
+            f"(transit defaulted to now: {args.transit_date} {args.transit_time} UTC)\n"
+        )
+
     # Build query params; only include what's set.
     params = {
         "name": args.name,
