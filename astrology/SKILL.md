@@ -1,7 +1,7 @@
 ---
 name: astrology
-description: Compute and interpret astrological charts — natal, synastry (two-person compatibility), and transits — from birth date/time/place. Returns dense, LLM-readable chart text (signs, houses, aspects, dignities, dispositor trees, aspect patterns). Use when someone asks for their birth chart, an astrology reading, compatibility between two people, or current transits. Calls a hosted endpoint — no server, no Node, no install; pure Python stdlib. For Human Design, use the human-design skill instead.
-when_to_use: User asks for a natal/birth chart, an astrology reading, synastry/compatibility between two people, or current transits. Also when you need precise planetary positions, houses, aspects, dispositor trees, or aspect patterns (stelliums, T-squares, grand trines, yods) for a given moment and place. NOT for Human Design (Type/Strategy/Authority/centers/gates) — that's the separate human-design skill.
+description: Compute and interpret astrological charts — natal, synastry (two-person compatibility), transits, and the current sky — from birth date/time/place. Returns dense, LLM-readable chart text (signs, houses, aspects, dignities, dispositor trees, aspect patterns). Use when someone asks for their birth chart, an astrology reading, compatibility between two people, current transits, or "what's going on with the stars right now". Calls a hosted endpoint — no server, no Node, no install; pure Python stdlib. For Human Design, use the human-design skill instead.
+when_to_use: User asks for a natal/birth chart, an astrology reading, synastry/compatibility between two people, current transits, or "what's going on with the stars / the sky right now" (use --type sky, no birth data needed). Also when you need precise planetary positions, houses, aspects, dispositor trees, or aspect patterns (stelliums, T-squares, grand trines, yods) for a given moment and place. NOT for Human Design (Type/Strategy/Authority/centers/gates) — that's the separate human-design skill.
 ---
 
 # Astrology — chart + reading
@@ -63,6 +63,27 @@ python scripts/chart.py --type transit \
 reading pass an explicit `--transit-time` in the user's local zone if precision
 matters. Slower planets are unaffected by the hour.)
 
+### Sky right now ("what's going on with the stars?")
+
+When the user asks about the *current sky* in general — not their personal chart,
+not their transits, just "what's going on astrologically right now" — use
+`--type sky`. **No birth data needed.** It defaults date/time to UTC-now and place
+to a neutral default:
+
+```bash
+python scripts/chart.py --type sky
+```
+
+This computes the current sky as a chart. **Read the planet signs and the
+`[ASPECTS]` section** — those are what "what's going on with the stars" means. The
+houses and Ascendant are location-dependent and arbitrary here unless you pass a
+real `--place` (e.g. `--type sky --place "Brooklyn, New York"` to ground the houses
+to a place). For a general "current sky" question, ignore the houses and read the
+signs + aspects.
+
+(Note: this is distinct from *transits*, which compare the current sky to a
+*person's* natal chart and need their birth data — use `--type transit` for that.)
+
 ## Flags
 
 | Flag | Meaning |
@@ -71,7 +92,7 @@ matters. Slower planets are unaffected by the hour.)
 | `--name2` / `--date2` / `--time2` / `--place2` | Person 2 (synastry). |
 | `--time` | `HH:MM` or `HH:MM:SS`, 24-hour, **local time at the birthplace**. |
 | `--place` | `"City, State"` (US) or `"City, Country"`. See gotchas. |
-| `--type` | `natal` (default), `synastry`, or `transit`. |
+| `--type` | `natal` (default), `synastry`, `transit`, or `sky` (current sky, no birth data). |
 | `--house-system` | `P` Placidus, `W` Whole Sign (default), `E` Equal, `O` Porphyry. |
 | `--transit-date` / `--transit-time` / `--transit-place` | The "current sky" moment for `--type transit`. **Omit for transits right now** (defaults to UTC-now). Place defaults to person 1's. |
 | `--unknown-time` | Birth time unknown: planets only, no Ascendant/houses/angles. |

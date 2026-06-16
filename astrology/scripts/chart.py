@@ -50,7 +50,7 @@ def main() -> int:
     p.add_argument("--place2")
     p.add_argument("--time2")
     # mode + options
-    p.add_argument("--type", default="natal", help="natal|synastry|transit|humandesign (default natal)")
+    p.add_argument("--type", default="natal", help="natal|synastry|transit|sky|humandesign (default natal). 'sky' = current sky, no birth data needed.")
     p.add_argument("--house-system", dest="house_system", default="W", help="P|W|E|O (default W)")
     p.add_argument("--transit-date", dest="transit_date")
     p.add_argument("--transit-time", dest="transit_time")
@@ -59,6 +59,28 @@ def main() -> int:
                    help="planets only, no houses/angles (astrology only)")
     p.add_argument("--json", action="store_true", help="print raw JSON instead of the text report")
     args = p.parse_args()
+
+    # "sky" = the current sky right now ("what's going on with the stars?").
+    # No birth data needed: fill date/time with UTC-now and place with a neutral
+    # default (Greenwich) if none given. It's computed as a natal-type chart for
+    # this moment; the planet signs + aspects are what matter (the houses/Ascendant
+    # are location-dependent and arbitrary unless the caller passes a real --place).
+    if args.type in ("sky", "now"):
+        import datetime
+        now = datetime.datetime.now(datetime.timezone.utc)
+        if not args.date:
+            args.date = now.strftime("%Y-%m-%d")
+        if not args.time:
+            args.time = now.strftime("%H:%M:%S")
+        if not args.place:
+            args.place = "Greenwich, United Kingdom"
+        if not args.name:
+            args.name = "Sky Now"
+        args.type = "natal"  # the endpoint computes it as a natal chart for now
+        sys.stderr.write(
+            f"(sky chart for now: {args.date} {args.time} UTC @ {args.place} — "
+            f"read planet signs + aspects; houses/Ascendant are location-dependent)\n"
+        )
 
     if not args.date or not args.place:
         p.error("--date and --place are required (and usually --time)")

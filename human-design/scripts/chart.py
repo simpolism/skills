@@ -46,7 +46,7 @@ def main() -> int:
     p.add_argument("--place2")
     p.add_argument("--time2")
     # mode + options
-    p.add_argument("--type", default="humandesign", help="humandesign (default). The endpoint also accepts natal|synastry|transit — see the astrology skill.")
+    p.add_argument("--type", default="humandesign", help="humandesign (default). The endpoint also accepts natal|synastry|transit|sky — see the astrology skill.")
     p.add_argument("--house-system", dest="house_system", default="W", help="P|W|E|O (default W)")
     p.add_argument("--transit-date", dest="transit_date")
     p.add_argument("--transit-time", dest="transit_time")
